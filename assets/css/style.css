@@ -1,60 +1,119 @@
+/* Guardar este contenido en assets/css/style.css */
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
-    background-color: #f9f9f9;
-    color: #333;
+    background: linear-gradient(to bottom right, #f0f4f8, #d9e2ec);
+    color: #1a1a1a;
 }
 
 header {
-    background-color: #004080;
-    color: white;
-    padding: 20px;
+    background-color: #0a3d62;
+    color: #f5f5f5;
+    padding: 25px 10px;
     text-align: center;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    position: sticky;
+    top: 0;
+    z-index: 1000;
 }
 
 header h1 {
     margin: 0;
-    font-size: 2em;
+    font-size: 2.5em;
+    letter-spacing: 1px;
+    text-transform: uppercase;
 }
 
 header p {
-    margin: 5px 0 10px 0;
+    margin: 5px 0 15px 0;
+    font-style: italic;
 }
 
 nav ul {
     list-style: none;
     padding: 0;
-    margin: 10px 0 0 0;
+    margin: 0;
     display: flex;
     justify-content: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 nav ul li a {
-    color: white;
+    color: #f5f5f5;
     text-decoration: none;
-    font-weight: bold;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 5px;
+    transition: background 0.3s, transform 0.3s;
 }
 
 nav ul li a:hover {
-    text-decoration: underline;
+    background-color: #1e90ff;
+    transform: scale(1.05);
 }
 
 main {
-    padding: 20px;
-    max-width: 900px;
+    padding: 40px 20px;
+    max-width: 1000px;
     margin: auto;
+    animation: fadeIn 1s ease-in;
 }
 
-footer {
-    background-color: #eee;
-    color: #666;
-    text-align: center;
-    padding: 10px;
-    margin-top: 20px;
+section {
+    background-color: #ffffff;
+    padding: 25px 30px;
+    margin-bottom: 25px;
+    border-radius: 12px;
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+section:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.2);
 }
 
 section h2 {
-    color: #004080;
+    color: #0a3d62;
+    margin-bottom: 15px;
+}
+
+section h3 {
+    color: #1e90ff;
+    margin-top: 20px;
+}
+
+ul {
+    padding-left: 20px;
+}
+
+ul li {
+    margin-bottom: 10px;
+}
+
+footer {
+    background-color: #0a3d62;
+    color: #f5f5f5;
+    text-align: center;
+    padding: 15px;
+    margin-top: 40px;
+    border-top: 3px solid #1e90ff;
+}
+
+@keyframes fadeIn {
+    from {opacity: 0; transform: translateY(20px);}
+    to {opacity: 1; transform: translateY(0);}
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    nav ul {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    main {
+        padding: 20px 10px;
+    }
 }
