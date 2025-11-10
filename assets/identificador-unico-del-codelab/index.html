@@ -1,62 +1,73 @@
-
 <!doctype html>
-
 <html>
 <head>
   <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
   <meta name="theme-color" content="#4F7DC9">
   <meta charset="UTF-8">
-  <title>Título del CodeLab</title>
+  <title>Guía Bastionar BIOS/UEFI</title>
   <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
   <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
   <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
   <style>
-    .success {
-      color: #1e8e3e;
-    }
-    .error {
-      color: red;
+    .success { color: #1e8e3e; }
+    .error { color: red; }
+    .image-placeholder {
+      width: 100%;
+      height: 250px;
+      background-color: #eee;
+      border: 2px dashed #ccc;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #aaa;
+      margin: 15px 0;
     }
   </style>
 </head>
 <body>
   <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
-  <google-codelab codelab-gaid="ID de Google Analytics"
-                  id="identificador-unico-del-codelab"
-                  title="Título del CodeLab"
+  <google-codelab codelab-gaid="ID-de-Google-Analytics"
+                  id="bastionar-bios-uefi"
+                  title="Guía Bastionar BIOS/UEFI"
                   environment="web"
-                  feedback-link="Un enlace en el que los usuarios puedan darte feedback (quizás creando un issue en un repositorio de git)">
-    
-      <google-codelab-step label="Sección 1" duration="10">
-        
+                  feedback-link="#">
 
+      <google-codelab-step label="Introducción" duration="5">
+          <h2>Introducción</h2>
+          <p>En esta guía aprenderás a bastionar la BIOS/UEFI de tu ordenador, fortaleciendo la seguridad desde el arranque del sistema.</p>
+          <div class="image-placeholder">[Aquí va la imagen de introducción]</div>
       </google-codelab-step>
-    
-      <google-codelab-step label="Sección 2" duration="5">
-        <h2 is-upgraded>Cajas de información</h2>
-<p>Texto plano dentro de cajas de información verdes y amarillas</p>
-<p>Negative : Esto aparecerá en una caja de información amarilla.</p>
-<p>Positive : Esto aparecerá en una caja de información verde.</p>
-<p>¡Ya tienes tus cajas de información creadas!</p>
-<h2 is-upgraded>Lista con viñetas</h2>
-<p>Texto plano en una lista con viñetas:</p>
-<ul>
-<li>Hola</li>
-<li>CodeLab</li>
-<li>Mundo</li>
-</ul>
-<p>¡Ya tienes tu lista con viñetas creada!</p>
-<h2 is-upgraded>Lista numerada</h2>
-<ol type="1">
-<li>Lista</li>
-<li>Utilizando</li>
-<li>Números</li>
-</ol>
-<p>¡Ya tienes tu lista numerada creada!</p>
 
-
+      <google-codelab-step label="Paso 1: Acceder a la BIOS/UEFI" duration="10">
+          <h2>Acceder a la BIOS/UEFI</h2>
+          <p>Para modificar la BIOS/UEFI, primero debes reiniciar el equipo y presionar la tecla correspondiente (F2, Del, Esc, etc.) según tu placa base.</p>
+          <div class="image-placeholder">[Imagen del arranque y tecla de acceso a BIOS]</div>
       </google-codelab-step>
-    
+
+      <google-codelab-step label="Paso 2: Configuración de seguridad" duration="15">
+          <h2>Configuración de seguridad</h2>
+          <p>Dentro de la BIOS/UEFI, realiza los siguientes ajustes para bastionar el sistema:</p>
+          <ul>
+              <li>Establecer contraseña de administrador de BIOS.</li>
+              <li>Habilitar arranque seguro (Secure Boot).</li>
+              <li>Deshabilitar arranque desde dispositivos externos no necesarios.</li>
+              <li>Activar TPM si está disponible.</li>
+          </ul>
+          <div class="image-placeholder">[Imagen de la sección de seguridad en BIOS]</div>
+      </google-codelab-step>
+
+      <google-codelab-step label="Paso 3: Guardar y reiniciar" duration="5">
+          <h2>Guardar cambios y reiniciar</h2>
+          <p>Después de aplicar los ajustes, guarda los cambios y reinicia el sistema para que tengan efecto.</p>
+          <div class="image-placeholder">[Imagen de confirmación de guardado y reinicio]</div>
+      </google-codelab-step>
+
+      <google-codelab-step label="Conclusión" duration="5">
+          <h2>Conclusión</h2>
+          <p>Con estos pasos, la BIOS/UEFI de tu ordenador estará bastionada, aumentando la seguridad del arranque y protegiendo el sistema ante accesos no autorizados.</p>
+          <div class="image-placeholder">[Imagen final de resumen]</div>
+      </google-codelab-step>
+
   </google-codelab>
 
   <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
