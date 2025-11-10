@@ -5,6 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Bastionado de Redes y Sistemas - Iván Paúl Alba</title>
     <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        .task-button {
+            display: inline-block;
+            padding: 12px 20px;
+            margin: 10px 5px;
+            background-color: #1e90ff;
+            color: white;
+            font-weight: bold;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: background 0.3s, transform 0.3s;
+        }
+        .task-button:hover {
+            background-color: #004080;
+            transform: scale(1.05);
+        }
+    </style>
 </head>
 <body>
 
@@ -36,7 +53,10 @@
                 <li>Proyecto 3: Auditoría de seguridad de sistemas</li>
             </ul>
 
-            <p>Puedes agregar más proyectos aquí y enlaces a repositorios según sea necesario.</p>
+            <h3>Tareas del módulo</h3>
+            <p>Accede a las guías de las tareas haciendo clic en los botones:</p>
+            <a href="tareas/parte1.md" class="task-button" target="_blank">Parte 1 - Bastionar BIOS/UEFI</a>
+            <a href="tareas/parte2.md" class="task-button" target="_blank">Parte 2 - Bastionar arranque Debian</a>
         </section>
     </main>
 
