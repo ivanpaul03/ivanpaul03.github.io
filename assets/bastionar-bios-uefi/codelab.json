@@ -1,0 +1,27 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2025-11-11T22:36:35+01:00",
+  "id": "bastionar-bios-uefi",
+  "duration": 0,
+  "title": "Guía para Bastionar la BIOS/UEFI",
+  "authors": "Iván Paúl Alba",
+  "summary": "Guía para bastionar la BIOS/UEFI",
+  "source": "codelab (1).md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "ciberseguridad",
+    "bios",
+    "uefi"
+  ],
+  "tags": [
+    "web"
+  ],
+  "feedback": "https://github.com/tuusuario/tu-repo/issues",
+  "url": "bastionar-bios-uefi"
+}

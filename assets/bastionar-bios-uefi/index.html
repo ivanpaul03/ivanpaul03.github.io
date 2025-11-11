@@ -1,0 +1,107 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Guía para Bastionar la BIOS/UEFI</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bastionar-bios-uefi"
+                  title="Guía para Bastionar la BIOS/UEFI"
+                  environment="web"
+                  feedback-link="https://github.com/tuusuario/tu-repo/issues">
+    
+      <google-codelab-step label="Introducción" duration="0">
+        <p>En esta guía aprenderás a bastionar la BIOS/UEFI de tu ordenador <strong>HP Pavilion 14</strong>, fortaleciendo la seguridad desde el arranque del sistema.<br> La BIOS/UEFI es el primer componente que se ejecuta al encender el equipo. Configurarla correctamente ayuda a prevenir accesos no autorizados, proteger la integridad del sistema operativo y evitar que el ordenador sea manipulado desde dispositivos externos.</p>
+<p class="image-container"><img alt="alt text" src="img\\1fe9a04182ea6c56.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 1: Acceder a la BIOS/UEFI" duration="0">
+        <p><strong>Qué hacemos:</strong> Acceder al menú de configuración de la BIOS/UEFI.<br><strong>Por qué es importante:</strong> Solo desde aquí podemos aplicar medidas de seguridad al firmware del equipo.<br><strong>Cómo se hace:</strong> Reinicia el equipo y, antes de que cargue el sistema operativo, pulsa repetidamente la tecla <strong>Esc</strong> hasta que aparezca el menú de inicio de HP. Luego, selecciona <strong>F10 - BIOS Setup</strong>.</p>
+<p class="image-container"><img alt="alt text" src="img\\2cc9034c0d97cb75.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 2: Establecer contraseñas de seguridad" duration="0">
+        <h2 is-upgraded>2.1. Contraseña de administrador (Administrator Password)</h2>
+<p><strong>Qué hacemos:</strong> Establecemos una contraseña para proteger el acceso a la configuración de la BIOS/UEFI.<br><strong>Por qué es importante:</strong> Impide que personas no autorizadas puedan modificar los parámetros de seguridad o alterar el orden de arranque.<br><strong>Cómo se hace:</strong> En la pestaña <strong>Security</strong>, selecciona <strong>Set Administrator Password</strong>, introduce una contraseña robusta y confírmala.</p>
+<p class="image-container"><img alt="alt text" src="img\\3a984aa9e2a3b6a5.png"></p>
+<h2 is-upgraded>2.2. Contraseña de encendido (Power-On Password)</h2>
+<p><strong>Qué hacemos:</strong> Activamos la contraseña que se solicita al encender el equipo.<br><strong>Por qué es importante:</strong> Esta medida protege el equipo frente a accesos físicos no autorizados, ya que nadie podrá iniciar el ordenador sin conocer la contraseña.<br><strong>Cómo se hace:</strong> En el mismo menú de <strong>Security</strong>, selecciona <strong>Set Power-On Password</strong>, introduce y confirma la contraseña.</p>
+<p class="image-container"><img alt="alt text" src="img\\cfc1008ab02b875b.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 3: Habilitar el arranque seguro (Secure Boot)" duration="0">
+        <p><strong>Qué hacemos:</strong> Activamos la función de arranque seguro.<br><strong>Por qué es importante:</strong> El arranque seguro verifica la firma digital del sistema operativo antes de iniciarlo, impidiendo que se ejecute software malicioso o no autorizado durante el arranque.<br><strong>Cómo se hace:</strong> En <strong>Security → Secure Boot Configuration</strong>, activa la opción <strong>Secure Boot</strong> y desactiva <strong>Legacy Support</strong>.</p>
+<p class="image-container"><img alt="alt text" src="img\\802c38376950258c.png"></p>
+<p>(Vemos en la parte de la izquierda de la imagen como está Disabled, menos la opción de Secure Boot que si tiene que estar habilitada).</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 4: Deshabilitar arranque desde dispositivos externos" duration="0">
+        <p><strong>Qué hacemos:</strong> Impedimos que el sistema arranque desde unidades externas como USB o DVD.<br><strong>Por qué es importante:</strong> Esta medida evita que se pueda arrancar el equipo desde medios externos con software malicioso que permita eludir las medidas de seguridad.<br><strong>Cómo se hace:</strong> En el menú <strong>System Configuration → Boot Options</strong>, localiza las opciones de arranque desde USB o red (<strong>USB Boot</strong>, <strong>Network Boot</strong>) y cámbialas a <strong>Disabled</strong>.</p>
+<p class="image-container"><img alt="alt text" src="img\\a665829369dcfa2e.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 5: Configurar el orden de arranque seguro" duration="0">
+        <p><strong>Qué hacemos:</strong> Establecemos el disco interno del sistema operativo como primera opción de arranque.<br><strong>Por qué es importante:</strong> Garantiza que el sistema siempre arranque desde el disco duro o SSD principal y no desde dispositivos potencialmente inseguros.<br><strong>Cómo se hace:</strong> Dentro del menú <strong>Boot Order</strong>, selecciona el disco interno y colócalo en primer lugar mediante las teclas indicadas en pantalla (generalmente <strong>F5/F6</strong>). Guarda los cambios.</p>
+<p class="image-container"><img alt="alt text" src="img\\a665829369dcfa2e.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 6: Activar el chip TPM (si está disponible)" duration="0">
+        <p><strong>Qué hacemos:</strong> Verificamos y habilitamos el módulo TPM (Trusted Platform Module).<br><strong>Por qué es importante:</strong> El TPM se utiliza para almacenar claves de cifrado y proteger la integridad del sistema. Es esencial para funciones como <strong>BitLocker</strong> en Windows.<br><strong>Cómo se hace:</strong> En la pestaña <strong>Security</strong>, busca la opción <strong>TPM Device</strong>, selecciona <strong>Enable</strong>, y asegúrate de que el estado sea <strong>Available</strong>.</p>
+<p class="image-container"><img alt="alt text" src="img\\5092d694b6537065.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 7: Guardar y reiniciar" duration="0">
+        <p><strong>Qué hacemos:</strong> Guardamos los cambios realizados y reiniciamos el sistema.<br><strong>Por qué es importante:</strong> Los cambios en la BIOS/UEFI no se aplican hasta que el sistema se reinicia.<br><strong>Cómo se hace:</strong> Pulsa <strong>F10</strong>, selecciona <strong>Save Changes and Exit</strong>, y confirma con <strong>Yes</strong>. El sistema se reiniciará con la nueva configuración segura.</p>
+<p class="image-container"><img alt="alt text" src="img\\e567a620e68ff23f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusión" duration="0">
+        <p>Has configurado correctamente la BIOS/UEFI de tu <strong>HP Pavilion 14</strong> para reforzar su seguridad.<br> Con las contraseñas de protección, el arranque seguro y la restricción de dispositivos externos, tu equipo ahora está mejor protegido frente a accesos no autorizados y ataques a bajo nivel.</p>
+<p>© 2025 Iván Paúl Alba – Curso de Especialización en Ciberseguridad</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
