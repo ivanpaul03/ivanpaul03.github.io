@@ -1,0 +1,126 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Bastionado del Arranque de Debian</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bastionado-arranque-debian"
+                  title="Bastionado del Arranque de Debian"
+                  environment="web"
+                  feedback-link="https://github.com/ivanpaulalba/ciberseguridad/issues">
+    
+      <google-codelab-step label="Paso 0: Copia de seguridad" duration="0">
+        <p>Antes de modificar cualquier archivo crítico, realiza una copia de seguridad. Esto te permitirá restaurar la configuración en caso de error:</p>
+<pre><code language="language-bash" class="language-bash">sudo cp /etc/grub.d/40_custom /etc/grub.d/40_custom.bak
+sudo cp /etc/default/grub /etc/default/grub.bak
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\e6468dec6b7cf6a3.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 1: Actualizar y verificar el sistema" duration="0">
+        <p>Asegúrate de que tu sistema Debian esté actualizado y que los paquetes no estén corruptos:</p>
+<pre><code language="language-bash" class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo apt install debsums -y
+sudo debsums -s
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\f7ea40a2e69eeddf.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 2: Configurar una contraseña para GRUB" duration="0">
+        <p>Para evitar accesos no autorizados, establece una contraseña para el usuario administrador del GRUB:</p>
+<p>Genera una contraseña cifrada:</p>
+<pre><code language="language-bash" class="language-bash">grub-mkpasswd-pbkdf2
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\92f55f3a6ba506bb.png"></p>
+<p>Copia la salida que comienza con grub.pbkdf2.sha512.10000....</p>
+<p>Edita el archivo de configuración personalizada de GRUB:</p>
+<pre><code language="language-bash" class="language-bash">sudo nano /etc/grub.d/40_custom
+</code></pre>
+<p>Añade estas líneas (reemplaza la clave cifrada con la tuya):</p>
+<pre><code language="language-bash" class="language-bash">set superusers=&#34;admin&#34;
+password_pbkdf2 admin grub.pbkdf2.sha512.10000.xxxxxxxxxxxxxxxxxxxxxxxxx
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\851d9aa4e57f6f94.png"></p>
+<p>Protege el archivo para que solo el superusuario pueda leerlo:</p>
+<pre><code language="language-bash" class="language-bash">sudo chmod 700 /etc/grub.d/40_custom
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\c6ad334f155c897c.png"></p>
+<p>Guarda los cambios y actualiza GRUB:</p>
+<pre><code language="language-bash" class="language-bash">sudo update-grub
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\886131cbe088b463.png"></p>
+<p>Ahora, el acceso al menú de arranque GRUB requerirá autenticación.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 3: Ocultar el menú de arranque (opcional)" duration="0">
+        <p>Para aumentar la seguridad y reducir la exposición del menú GRUB, puedes ocultarlo modificando el tiempo de espera:</p>
+<p>Edita el archivo principal de configuración de GRUB:</p>
+<pre><code language="language-bash" class="language-bash">sudo nano /etc/default/grub
+</code></pre>
+<p>Cambia o añade las siguientes líneas:</p>
+<p>GRUB_TIMEOUT=0 GRUB_HIDDEN_TIMEOUT=0</p>
+<p class="image-container"><img alt="alt text" src="img\\f8abf28a610274de.png"></p>
+<p>Aplica los cambios:</p>
+<pre><code language="language-bash" class="language-bash">sudo update-grub
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\792a75c1e56c401d.png"></p>
+<p>Esto hará que el menú de GRUB no se muestre al arrancar, aunque la contraseña sigue siendo requerida si se intenta acceder al modo de edición.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 4: Verificar la protección de GRUB" duration="0">
+        <p>Reinicia el sistema y, en el menú de arranque, pulsa e sobre la entrada de Debian. Debería solicitarte la contraseña configurada para poder editar los parámetros de arranque.</p>
+<p class="image-container"><img alt="alt text" src="img\\7060791f0caa7580.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 5: Verificar Secure Boot y TPM" duration="0">
+        <p>Para comprobar que Secure Boot y TPM están activos en tu sistema Debian:</p>
+<pre><code language="language-bash" class="language-bash">sudo mokutil --sb-state
+sudo tpm2_getrandom 8
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\3ed2dc2dd13e8ed5.png"></p>
+<p class="image-container"><img alt="alt text" src="img\\a883451d06c654f7.png"></p>
+<p class="image-container"><img alt="alt text" src="img\\e89e2ce23cd5c1ce.png"></p>
+<p>Mi equipo no dispone de un chip TPM o que está desactivado en la BIOS/UEFI porque estoy trabajando desde una máquina virtual de VirtualBox.</p>
+<p>Estas medidas garantizan que solo firmware y sistemas confiables puedan arrancar.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
