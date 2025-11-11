@@ -1,0 +1,29 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2025-11-11T16:57:11+01:00",
+  "id": "bastionado-arranque-debian",
+  "duration": 0,
+  "title": "Bastionado del Arranque de Debian",
+  "authors": "Iván Paúl Alba",
+  "summary": "Bastionado del Arranque de Debian",
+  "source": "codelab (2).md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "ciberseguridad",
+    "debian",
+    "linux",
+    "bastionado",
+    "grub"
+  ],
+  "tags": [
+    "web"
+  ],
+  "feedback": "https://github.com/tuusuario/tu-repo/issues",
+  "url": "bastionado-arranque-debian"
+}
