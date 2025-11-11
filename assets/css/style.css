@@ -7,6 +7,7 @@ body {
     color: #1a1a1a;
 }
 
+/* ===== ENCABEZADO ===== */
 header {
     background-color: #0a3d62;
     color: #f5f5f5;
@@ -30,6 +31,7 @@ header p {
     font-style: italic;
 }
 
+/* ===== NAVEGACIÓN ===== */
 nav ul {
     list-style: none;
     padding: 0;
@@ -53,6 +55,7 @@ nav ul li a:hover {
     transform: scale(1.05);
 }
 
+/* ===== CONTENIDO PRINCIPAL ===== */
 main {
     padding: 40px 20px;
     max-width: 1000px;
@@ -67,6 +70,7 @@ section {
     border-radius: 12px;
     box-shadow: 0 8px 16px rgba(0,0,0,0.1);
     transition: transform 0.3s, box-shadow 0.3s;
+    text-align: center; /* Centra todo el contenido dentro de section */
 }
 
 section:hover {
@@ -77,21 +81,45 @@ section:hover {
 section h2 {
     color: #0a3d62;
     margin-bottom: 15px;
+    text-align: center; /* Centra el título principal */
 }
 
 section h3 {
     color: #1e90ff;
     margin-top: 20px;
+    text-align: center; /* Centra subtítulos */
 }
 
+/* ===== BOTONES DE TAREAS ===== */
+.task-button {
+    display: inline-block;
+    padding: 12px 20px;
+    margin: 10px 10px;
+    background-color: #1e90ff;
+    color: #fff;
+    font-weight: bold;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+}
+
+.task-button:hover {
+    background-color: #004080;
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ===== LISTAS ===== */
 ul {
     padding-left: 20px;
+    text-align: left; /* Para que las listas sigan alineadas correctamente */
 }
 
 ul li {
     margin-bottom: 10px;
 }
 
+/* ===== PIE DE PÁGINA ===== */
 footer {
     background-color: #0a3d62;
     color: #f5f5f5;
@@ -101,12 +129,13 @@ footer {
     border-top: 3px solid #1e90ff;
 }
 
+/* ===== ANIMACIONES ===== */
 @keyframes fadeIn {
     from {opacity: 0; transform: translateY(20px);}
     to {opacity: 1; transform: translateY(0);}
 }
 
-/* Responsive */
+/* ===== RESPONSIVE ===== */
 @media (max-width: 768px) {
     nav ul {
         flex-direction: column;
@@ -115,5 +144,11 @@ footer {
 
     main {
         padding: 20px 10px;
+    }
+
+    .task-button {
+        display: block;
+        margin: 10px auto;
+        width: 80%;
     }
 }
