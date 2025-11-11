@@ -1,0 +1,102 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Bastionado del Arranque de Debian</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="bastionado-arranque-debian"
+                  title="Bastionado del Arranque de Debian"
+                  environment="web"
+                  feedback-link="https://github.com/ivanpaulalba/ciberseguridad/issues">
+    
+      <google-codelab-step label="Introducción" duration="0">
+        <p>En esta guía se explica cómo <strong>bastionar el arranque de un sistema Debian</strong>, asegurando el control sobre el cargador de arranque (GRUB), activando mecanismos de seguridad como <strong>Secure Boot</strong> y <strong>TPM</strong>, y reduciendo el riesgo de arranques no autorizados o manipulaciones del sistema operativo.</p>
+<p class="image-container"><img alt="Introducción bastionado de arranque Debian" src="img\\4499c88d7df65d3a.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 1: Actualizar y verificar el sistema" duration="0">
+        <p>Antes de comenzar, asegúrate de tener tu sistema Debian actualizado y sin paquetes corruptos.</p>
+<pre><code language="language-bash" class="language-bash">sudo apt update &amp;&amp; sudo apt upgrade -y
+sudo apt install debsums -y
+sudo debsums -s
+</code></pre>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 2: Configurar una contraseña para GRUB" duration="0">
+        <p>El cargador de arranque GRUB puede ser manipulado si no se protege adecuadamente. Para evitar accesos no autorizados, establece una contraseña para el usuario administrador del GRUB.</p>
+<ol type="1">
+<li>Genera una contraseña cifrada:</li>
+</ol>
+<pre><code language="language-bash" class="language-bash">grub-mkpasswd-pbkdf2
+</code></pre>
+<p>Copia la salida que comienza con grub.pbkdf2.sha512.10000...</p>
+<ol type="1" start="2">
+<li>Edita el archivo de configuración personalizada de GRUB:</li>
+</ol>
+<pre><code language="language-bash" class="language-bash">sudo nano /etc/grub.d/40_custom
+</code></pre>
+<ol type="1" start="3">
+<li>Añade estas líneas (reemplaza la clave cifrada con la tuya):</li>
+</ol>
+<pre><code language="language-bash" class="language-bash">set superusers=&#34;admin&#34;
+password_pbkdf2 admin grub.pbkdf2.sha512.10000.xxxxxxxxxxxxxxxxxxxxxxxxx
+</code></pre>
+<ol type="1" start="4">
+<li>Guarda los cambios y actualiza el cargador:</li>
+</ol>
+<pre><code language="language-bash" class="language-bash">sudo update-grub
+</code></pre>
+<p>Ahora, el acceso al menú de arranque GRUB requerirá autenticación.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 3: Aplicar los cambios al GRUB" duration="0">
+        <p>Una vez configurada la contraseña, actualiza GRUB para aplicar los cambios:</p>
+<pre><code language="language-bash" class="language-bash">sudo update-grub
+</code></pre>
+<p>Este comando regenerará la configuración del cargador de arranque y aplicará la protección por contraseña.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Paso 4: Verificar la protección de GRUB" duration="0">
+        <p>Reinicia el sistema y, en el menú de arranque, pulsa e sobre la entrada de Debian.</p>
+<p>Debería solicitarte la contraseña configurada para poder editar los parámetros de arranque. Esto confirma que la protección está correctamente activada.</p>
+<p>© 2025 Iván Paúl Alba — Curso de Especialización en Ciberseguridad</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
