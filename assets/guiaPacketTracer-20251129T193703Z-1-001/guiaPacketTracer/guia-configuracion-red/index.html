@@ -1,0 +1,652 @@
+
+<!doctype html>
+
+<html>
+<head>
+  <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+  <meta name="theme-color" content="#4F7DC9">
+  <meta charset="UTF-8">
+  <title>Guía de Configuración de Red</title>
+  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=Source+Code+Pro:400|Roboto:400,300,400italic,500,700|Roboto+Mono">
+  <link rel="stylesheet" href="//fonts.googleapis.com/icon?family=Material+Icons">
+  <link rel="stylesheet" href="https://storage.googleapis.com/claat-public/codelab-elements.css">
+  <style>
+    .success {
+      color: #1e8e3e;
+    }
+    .error {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <google-codelab-analytics gaid="UA-49880327-14"></google-codelab-analytics>
+  <google-codelab codelab-gaid=""
+                  id="guia-configuracion-red"
+                  title="Guía de Configuración de Red"
+                  environment="web"
+                  feedback-link="https://github.com/IES-Rafael-Alberti/25-26-Ciberseguridad-Grupo-5">
+    
+      <google-codelab-step label="Introducción" duration="0">
+        <p>Este documento describe la implementación de una red corporativa segmentada mediante VLANs, diseñada en Cisco Packet Tracer. La topología incluye tres routers interconectados en una arquitectura de red WAN, con dos switches de acceso que proporcionan conectividad a dos ubicaciones (A y B).</p>
+<p>La red está segmentada en cuatro VLANs diferenciadas por tipo de usuario (empleados y clientes) y ubicación física, implementando medidas de seguridad como ACLs y port-security.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Diseño y planificación de la segmentación (VLANs y VLSM)" duration="0">
+        <h2 is-upgraded>Esquema de direccionamiento VLSM</h2>
+<p>La red utiliza el espacio de direcciones 10.10.0.0/16 con la siguiente segmentación:</p>
+<table>
+<tr><td colspan="1" rowspan="1"><p>VLAN</p>
+</td><td colspan="1" rowspan="1"><p>Nombre</p>
+</td><td colspan="1" rowspan="1"><p>Red</p>
+</td><td colspan="1" rowspan="1"><p>Máscara</p>
+</td><td colspan="1" rowspan="1"><p>Hosts disponibles</p>
+</td><td colspan="1" rowspan="1"><p>Ubicación</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>VLAN 10</p>
+</td><td colspan="1" rowspan="1"><p>EMPLEADOS_A</p>
+</td><td colspan="1" rowspan="1"><p>10.10.0.0/23</p>
+</td><td colspan="1" rowspan="1"><p>255.255.254.0</p>
+</td><td colspan="1" rowspan="1"><p>510</p>
+</td><td colspan="1" rowspan="1"><p>Sede A</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>VLAN 20</p>
+</td><td colspan="1" rowspan="1"><p>CLIENTES_A</p>
+</td><td colspan="1" rowspan="1"><p>10.10.4.0/24</p>
+</td><td colspan="1" rowspan="1"><p>255.255.255.0</p>
+</td><td colspan="1" rowspan="1"><p>254</p>
+</td><td colspan="1" rowspan="1"><p>Sede A</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>VLAN 11</p>
+</td><td colspan="1" rowspan="1"><p>EMPLEADOS_B</p>
+</td><td colspan="1" rowspan="1"><p>10.10.2.0/23</p>
+</td><td colspan="1" rowspan="1"><p>255.255.254.0</p>
+</td><td colspan="1" rowspan="1"><p>510</p>
+</td><td colspan="1" rowspan="1"><p>Sede B</p>
+</td></tr>
+<tr><td colspan="1" rowspan="1"><p>VLAN 21</p>
+</td><td colspan="1" rowspan="1"><p>CLIENTES_B</p>
+</td><td colspan="1" rowspan="1"><p>10.10.5.0/24</p>
+</td><td colspan="1" rowspan="1"><p>255.255.255.0</p>
+</td><td colspan="1" rowspan="1"><p>254</p>
+</td><td colspan="1" rowspan="1"><p>Sede B</p>
+</td></tr>
+</table>
+<h2 is-upgraded>Redes WAN</h2>
+<p>Las conexiones entre routers utilizan subredes /30 para optimizar el uso de direcciones:</p>
+<ul>
+<li><strong>Router0 ↔ Router1</strong>: 10.10.6.0/30<ul>
+<li>Router0: 10.10.6.1</li>
+<li>Router1: 10.10.6.2</li>
+</ul>
+</li>
+<li><strong>Router0 ↔ Router2</strong>: 10.10.6.4/30<ul>
+<li>Router0: 10.10.6.5</li>
+<li>Router2: 10.10.6.6</li>
+</ul>
+</li>
+</ul>
+<h2 is-upgraded>Justificación del diseño</h2>
+<p>Hemos decidido separar la red en VLANs principalmente por seguridad. La idea es que los empleados y los clientes estén en redes diferentes para que los visitantes no puedan acceder a los recursos internos de la empresa. Básicamente, si alguien se conecta como cliente, no debería poder ver ni acceder a los equipos o servidores que usan los trabajadores.</p>
+<p>También hemos separado las redes por ubicación (Sede A y Sede B) porque así es más fácil gestionar cada sitio de forma independiente. Si hay algún problema en una sede, no afecta a la otra, y además podemos aplicar reglas de seguridad diferentes si cada ubicación lo necesita. Esto también ayuda a que la red vaya más fluida, porque no hay tanto tráfico innecesario entre sedes.</p>
+<p><strong>Por qué hemos usado estas redes:</strong></p>
+<ul>
+<li><strong>VLAN 10 y 11 (Empleados)</strong>: Hemos usado una red /23 que da para 510 ordenadores, así tenemos margen de sobra si la empresa crece y contrata más gente</li>
+<li><strong>VLAN 20 y 21 (Clientes)</strong>: Aquí con una red /24 que da para 254 dispositivos es suficiente, porque normalmente no hay tantos clientes conectados al mismo tiempo</li>
+<li><strong>Separación por ubicación</strong>: Cada sede tiene sus propias VLANs, así si necesitamos cambiar algo en una sede no tocamos la otra</li>
+<li><strong>Segmentación de tráfico</strong>: Al separar empleados de clientes evitamos que se vea tráfico entre ellos, mejorando tanto la seguridad como el rendimiento</li>
+<li><strong>Enlaces entre routers</strong>: Para conectar los routers hemos usado redes /30 que solo dan 2 IPs útiles, justo lo que necesitamos, sin desperdiciar direcciones</li>
+</ul>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Configuración de los switches (VLANs, trunks, port-security)" duration="0">
+        <h2 is-upgraded>Switch0 (Sede A)</h2>
+<h3 is-upgraded>Creación de VLANs</h3>
+<pre><code language="language-cisco" class="language-cisco">Switch0&gt;enable
+Switch0#configure terminal
+Switch0(config)#vlan 10
+Switch0(config-vlan)#name EMPLEADOS_A
+Switch0(config-vlan)#exit
+Switch0(config)#vlan 20
+Switch0(config-vlan)#name CLIENTES_A
+Switch0(config-vlan)#exit
+</code></pre>
+<h3 is-upgraded>Configuración de puertos de acceso</h3>
+<p><strong>Puertos para VLAN 10 (Empleados) - FastEthernet 0/1-10:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch0(config)#interface range fastEthernet 0/1-10
+Switch0(config-if-range)#switchport mode access
+Switch0(config-if-range)#switchport access vlan 10
+Switch0(config-if-range)#exit
+</code></pre>
+<p><strong>Puertos para VLAN 20 (Clientes) - FastEthernet 0/11-20:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch0(config)#interface range fastEthernet 0/11-20
+Switch0(config-if-range)#switchport mode access
+Switch0(config-if-range)#switchport access vlan 20
+Switch0(config-if-range)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\a0b541a572b61310.png"></p>
+<h3 is-upgraded>Configuración de puerto trunk</h3>
+<pre><code language="language-cisco" class="language-cisco">Switch0(config)#interface gigabitEthernet 0/1
+Switch0(config-if)#switchport mode trunk
+Switch0(config-if)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\e556f50cf553e685.png"></p>
+<h3 is-upgraded>Port-security</h3>
+<p>Hemos configurado port-security en todos los puertos de acceso para permitir solo 1 MAC address por puerto, con modo de violación shutdown:</p>
+<pre><code language="language-cisco" class="language-cisco">Switch0(config)#interface range fastEthernet 0/1-20
+Switch0(config-if-range)#switchport port-security
+Switch0(config-if-range)#switchport port-security maximum 1
+Switch0(config-if-range)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\6c13292ef9991ae5.png"></p>
+<p><strong>Verificación de VLANs:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch0#show vlan brief
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\a0b541a572b61310.png"></p>
+<p><strong>Verificación de Port-security:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch0#show port-security
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\6c13292ef9991ae5.png"></p>
+<h2 is-upgraded>Switch1 (Sede B)</h2>
+<h3 is-upgraded>Creación de VLANs</h3>
+<pre><code language="language-cisco" class="language-cisco">Switch1&gt;enable
+Switch1#configure terminal
+Switch1(config)#vlan 11
+Switch1(config-vlan)#name EMPLEADOS_B
+Switch1(config-vlan)#exit
+Switch1(config)#vlan 21
+Switch1(config-vlan)#name CLIENTES_B
+Switch1(config-vlan)#exit
+</code></pre>
+<h3 is-upgraded>Configuración de puertos de acceso</h3>
+<p><strong>Puertos para VLAN 11 (Empleados) - FastEthernet 0/1-10:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch1(config)#interface range fastEthernet 0/1-10
+Switch1(config-if-range)#switchport mode access
+Switch1(config-if-range)#switchport access vlan 11
+Switch1(config-if-range)#exit
+</code></pre>
+<p><strong>Puertos para VLAN 21 (Clientes) - FastEthernet 0/11-20:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Switch1(config)#interface range fastEthernet 0/11-20
+Switch1(config-if-range)#switchport mode access
+Switch1(config-if-range)#switchport access vlan 21
+Switch1(config-if-range)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\fb1d6b679c26ebcc.png"></p>
+<h3 is-upgraded>Configuración de puerto trunk</h3>
+<pre><code language="language-cisco" class="language-cisco">Switch1(config)#interface gigabitEthernet 0/1
+Switch1(config-if)#switchport mode trunk
+Switch1(config-if)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\9966a64b923d9183.png"></p>
+<h3 is-upgraded>Port-security</h3>
+<p>Igual que en Switch0, hemos configurado port-security en todos los puertos de acceso:</p>
+<pre><code language="language-cisco" class="language-cisco">Switch1(config)#interface range fastEthernet 0/1-20
+Switch1(config-if-range)#switchport port-security
+Switch1(config-if-range)#switchport port-security maximum 1
+Switch1(config-if-range)#exit
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\a97f1544e61eed14.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Configuración de los routers (router-on-a-stick, ACLs)" duration="0">
+        <h2 is-upgraded>Router0 (Intermediario)</h2>
+<p>Este router actúa como intermediario entre las dos sedes, enrutando el tráfico entre Router1 y Router2.</p>
+<h3 is-upgraded>Configuración de interfaces WAN</h3>
+<pre><code language="language-cisco" class="language-cisco">Router0&gt;enable
+Router0#configure terminal
+
+Router0(config)#interface gigabitEthernet 0/0/0
+Router0(config-if)#ip address 10.10.6.1 255.255.255.252
+Router0(config-if)#no shutdown
+Router0(config-if)#exit
+
+Router0(config)#interface gigabitEthernet 0/0/1
+Router0(config-if)#ip address 10.10.6.5 255.255.255.252
+Router0(config-if)#no shutdown
+Router0(config-if)#exit
+</code></pre>
+<h3 is-upgraded>Enrutamiento estático</h3>
+<pre><code language="language-cisco" class="language-cisco">Router0(config)#ip route 10.10.0.0 255.255.254.0 10.10.6.2
+Router0(config)#ip route 10.10.2.0 255.255.254.0 10.10.6.6
+</code></pre>
+<p><strong>Verificación de interfaces:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router0#show ip interface brief
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\bc464eb1f9fb2a2b.png"></p>
+<p><strong>Verificación de rutas:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router0#show ip route
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\6df03e0b9f74302a.png"></p>
+<h2 is-upgraded>Router1 (Sede A) - Router-on-a-stick</h2>
+<p>Este router gestiona las VLANs de la Sede A mediante subinterfaces y se conecta al Router0.</p>
+<h3 is-upgraded>Configuración WAN (hacia Router0)</h3>
+<pre><code language="language-cisco" class="language-cisco">Router1&gt;enable
+Router1#configure terminal
+
+Router1(config)#interface gigabitEthernet 0/0/0
+Router1(config-if)#ip address 10.10.6.2 255.255.255.252
+Router1(config-if)#no shutdown
+Router1(config-if)#exit
+</code></pre>
+<h3 is-upgraded>Configuración de subinterfaces (router-on-a-stick)</h3>
+<pre><code language="language-cisco" class="language-cisco">Router1(config)#interface gigabitEthernet 0/0/1
+Router1(config-if)#no shutdown
+Router1(config-if)#exit
+
+Router1(config)#interface gigabitEthernet 0/0/1.10
+Router1(config-subif)#encapsulation dot1Q 10
+Router1(config-subif)#ip address 10.10.0.1 255.255.254.0
+Router1(config-subif)#exit
+
+Router1(config)#interface gigabitEthernet 0/0/1.20
+Router1(config-subif)#encapsulation dot1Q 20
+Router1(config-subif)#ip address 10.10.4.1 255.255.255.0
+Router1(config-subif)#exit
+</code></pre>
+<h3 is-upgraded>Enrutamiento estático</h3>
+<pre><code language="language-cisco" class="language-cisco">Router1(config)#ip route 10.10.2.0 255.255.254.0 10.10.6.1
+</code></pre>
+<p><strong>Verificación de interfaces:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router1#show ip interface brief
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\f40ae81359dc3a96.png"></p>
+<p><strong>Verificación de rutas:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router1#show ip route
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\1be32684f42ee667.png"></p>
+<h3 is-upgraded>Configuración de ACLs</h3>
+<p><strong>ACL 101 para VLAN 20 (Clientes_A) - Bloquea acceso a redes de empleados:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router1(config)#access-list 101 deny ip 10.10.4.0 0.0.0.255 10.10.0.0 0.0.1.255
+Router1(config)#access-list 101 deny ip 10.10.4.0 0.0.0.255 10.10.2.0 0.0.1.255
+Router1(config)#access-list 101 permit ip any any
+Router1(config)#access-list 101 deny ip 10.10.4.0 0.0.0.255 10.10.5.0 0.0.0.255
+Router1(config)#interface gigabitEthernet 0/0/1.20
+Router1(config-subif)#ip access-group 101 in
+Router1(config-subif)#exit
+</code></pre>
+<p><strong>ACL 102 para VLAN 10 (Empleados_A) - Bloquea acceso a redes de clientes:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router1(config)#access-list 102 deny ip 10.10.0.0 0.0.1.255 10.10.4.0 0.0.0.255
+Router1(config)#access-list 102 deny ip 10.10.0.0 0.0.1.255 10.10.5.0 0.0.0.255
+Router1(config)#access-list 102 permit ip any any
+Router1(config)#interface gigabitEthernet 0/0/1.10
+Router1(config-subif)#ip access-group 102 in
+Router1(config-subif)#exit
+</code></pre>
+<p><strong>Verificación de ACLs:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router1#show access-lists
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\6b7d7ac3a3e152bf.png"></p>
+<h2 is-upgraded>Router2 (Sede B) - Router-on-a-stick</h2>
+<p>Este router gestiona las VLANs de la Sede B mediante subinterfaces y se conecta al Router0.</p>
+<h3 is-upgraded>Configuración WAN (hacia Router0)</h3>
+<pre><code language="language-cisco" class="language-cisco">Router2&gt;enable
+Router2#configure terminal
+
+Router2(config)#interface gigabitEthernet 0/0/0
+Router2(config-if)#ip address 10.10.6.6 255.255.255.252
+Router2(config-if)#no shutdown
+Router2(config-if)#exit
+</code></pre>
+<h3 is-upgraded>Configuración de subinterfaces (router-on-a-stick)</h3>
+<pre><code language="language-cisco" class="language-cisco">Router2(config)#interface gigabitEthernet 0/0/1
+Router2(config-if)#no shutdown
+Router2(config-if)#exit
+
+Router2(config)#interface gigabitEthernet 0/0/1.11
+Router2(config-subif)#encapsulation dot1Q 11
+Router2(config-subif)#ip address 10.10.2.1 255.255.254.0
+Router2(config-subif)#exit
+
+Router2(config)#interface gigabitEthernet 0/0/1.21
+Router2(config-subif)#encapsulation dot1Q 21
+Router2(config-subif)#ip address 10.10.5.1 255.255.255.0
+Router2(config-subif)#exit
+</code></pre>
+<h3 is-upgraded>Enrutamiento estático</h3>
+<pre><code language="language-cisco" class="language-cisco">Router2(config)#ip route 10.10.0.0 255.255.254.0 10.10.6.5
+</code></pre>
+<p><strong>Verificación de interfaces:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router2#show ip interface brief
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\1306cd314c8dd5da.png"></p>
+<p><strong>Verificación de rutas:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router2#show ip route
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\ce737b855c9bbd73.png"></p>
+<h3 is-upgraded>Configuración de ACLs</h3>
+<p><strong>ACL 101 para VLAN 21 (Clientes_B) - Bloquea acceso a redes de empleados:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router2(config)#access-list 101 deny ip 10.10.5.0 0.0.0.255 10.10.2.0 0.0.1.255
+Router2(config)#access-list 101 deny ip 10.10.5.0 0.0.0.255 10.10.0.0 0.0.1.255
+Router2(config)#access-list 101 permit ip any any
+Router2(config)#access-list 101 deny ip 10.10.5.0 0.0.0.255 10.10.4.0 0.0.0.255
+Router2(config)#interface gigabitEthernet 0/0/1.21
+Router2(config-subif)#ip access-group 101 in
+Router2(config-subif)#exit
+</code></pre>
+<p><strong>ACL 102 para VLAN 11 (Empleados_B) - Bloquea acceso a redes de clientes:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router2(config)#access-list 102 deny ip 10.10.2.0 0.0.1.255 10.10.5.0 0.0.0.255
+Router2(config)#access-list 102 deny ip 10.10.2.0 0.0.1.255 10.10.4.0 0.0.0.255
+Router2(config)#access-list 102 permit ip any any
+Router2(config)#interface gigabitEthernet 0/0/1.11
+Router2(config-subif)#ip access-group 102 in
+Router2(config-subif)#exit
+</code></pre>
+<p><strong>Verificación de ACLs:</strong></p>
+<pre><code language="language-cisco" class="language-cisco">Router2#show access-lists
+</code></pre>
+<p class="image-container"><img alt="alt text" src="img\\93d4e68438d3a594.png"></p>
+<h2 is-upgraded>Explicación de las ACLs</h2>
+<p>Las ACLs implementadas siguen una política de seguridad clara:</p>
+<p><strong>Para las VLANs de Clientes (20 y 21):</strong></p>
+<ul>
+<li>Bloquean el acceso a todas las redes de empleados (VLAN 10 y 11)</li>
+<li>Bloquean el acceso entre sí (clientes de Sede A no acceden a clientes de Sede B y viceversa)</li>
+<li>Permiten el resto del tráfico (acceso a Internet/otros recursos)</li>
+</ul>
+<p><strong>Para las VLANs de Empleados (10 y 11):</strong></p>
+<ul>
+<li>Bloquean el acceso a las redes de clientes (VLAN 20 y 21)</li>
+<li>Permiten el acceso entre empleados de diferentes sedes</li>
+<li>Permiten el resto del tráfico</li>
+</ul>
+<p>Esta configuración asegura que los clientes estén completamente aislados de los recursos corporativos y entre sí, mientras que los empleados pueden comunicarse entre sedes pero no acceder a las redes de clientes.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Configuración de los hosts" duration="0">
+        <h2 is-upgraded>Sede A - VLAN 10 (Empleados)</h2>
+<p><strong>PC-PT PC0:</strong></p>
+<ul>
+<li>IP: 10.10.0.2</li>
+<li>Máscara: 255.255.254.0</li>
+<li>Gateway: 10.10.0.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\ee121c29f21d86c3.png"></p>
+<p><strong>PC-PT PC1:</strong></p>
+<ul>
+<li>IP: 10.10.1.254</li>
+<li>Máscara: 255.255.254.0</li>
+<li>Gateway: 10.10.0.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\ca76540f26e66fea.png"></p>
+<h2 is-upgraded>Sede A - VLAN 20 (Clientes)</h2>
+<p><strong>PC-PT PC2:</strong></p>
+<ul>
+<li>IP: 10.10.4.2</li>
+<li>Máscara: 255.255.255.0</li>
+<li>Gateway: 10.10.4.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\96100f9b0993b313.png"></p>
+<p><strong>PC-PT PC3:</strong></p>
+<ul>
+<li>IP: 10.10.4.254</li>
+<li>Máscara: 255.255.255.0</li>
+<li>Gateway: 10.10.4.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\735db7c70f62c2ca.png"></p>
+<h2 is-upgraded>Sede B - VLAN 11 (Empleados)</h2>
+<p><strong>PC-PT PC4:</strong></p>
+<ul>
+<li>IP: 10.10.2.2</li>
+<li>Máscara: 255.255.254.0</li>
+<li>Gateway: 10.10.2.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\bc9a426cdcc9e280.png"></p>
+<p><strong>PC-PT PC5:</strong></p>
+<ul>
+<li>IP: 10.10.3.254</li>
+<li>Máscara: 255.255.254.0</li>
+<li>Gateway: 10.10.2.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\982467d85701bb8.png"></p>
+<h2 is-upgraded>Sede B - VLAN 21 (Clientes)</h2>
+<p><strong>PC-PT PC6:</strong></p>
+<ul>
+<li>IP: 10.10.5.2</li>
+<li>Máscara: 255.255.255.0</li>
+<li>Gateway: 10.10.5.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\dcf67f0c100de402.png"></p>
+<p><strong>PC-PT PC7:</strong></p>
+<ul>
+<li>IP: 10.10.5.254</li>
+<li>Máscara: 255.255.255.0</li>
+<li>Gateway: 10.10.5.1</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\407a4ff52a87992f.png"></p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Medidas de seguridad aplicadas" duration="0">
+        <p>En nuestra red hemos implementado varias capas de seguridad para proteger tanto los datos como los dispositivos. La idea es que no solo haya una barrera, sino varias, para que si alguien consigue pasar una, todavía tenga que enfrentarse a otras.</p>
+<h2 is-upgraded>1. Segmentación mediante VLANs</h2>
+<p>La primera medida de seguridad es la separación en VLANs. Básicamente hemos dividido la red en 4 segmentos diferentes:</p>
+<ul>
+<li><strong>Separación empleados-clientes</strong>: Los empleados (VLAN 10 y 11) están completamente separados de los clientes (VLAN 20 y 21). Esto evita que un visitante pueda ver o acceder a equipos internos de la empresa</li>
+<li><strong>Separación por sedes</strong>: Cada ubicación tiene sus propias VLANs, así si hay algún problema en una sede, la otra no se ve afectada</li>
+<li><strong>Reducción de tráfico innecesario</strong>: Al dividir en VLANs, cada una tiene su propio dominio de broadcast, lo que significa menos tráfico molesto en la red</li>
+</ul>
+<p>Esta separación es la base de todo el sistema de seguridad, porque si alguien se conecta a una VLAN, automáticamente ya está limitado a lo que puede ver y hacer.</p>
+<h2 is-upgraded>2. Port-security en los switches</h2>
+<p>Hemos activado port-security en todos los puertos de los switches (FastEthernet 0/1-20) para evitar que alguien conecte dispositivos no autorizados:</p>
+<ul>
+<li><strong>Máximo 1 dirección MAC por puerto</strong>: Cada puerto solo permite un dispositivo conectado</li>
+<li><strong>Modo de violación shutdown</strong>: Si alguien intenta conectar más dispositivos o cambiar el equipo, el puerto se apaga automáticamente</li>
+<li><strong>Protección contra ataques</strong>: Esto nos protege de ataques como MAC flooding o MAC spoofing, donde alguien intenta saturar el switch con direcciones MAC falsas</li>
+</ul>
+<p>Esta medida es muy efectiva porque si un atacante intenta conectarse a un puerto donde ya hay un PC, el puerto se desactiva y nos damos cuenta inmediatamente de que algo raro está pasando.</p>
+<h2 is-upgraded>3. Access Control Lists (ACLs)</h2>
+<p>Las ACLs son listas de reglas que controlan qué tráfico puede pasar y cuál no. Las hemos configurado en los routers 1 y 2 para controlar el tráfico entre VLANs:</p>
+<p><strong>ACL 101 - Para VLANs de clientes (VLAN 20 y 21):</strong></p>
+<ul>
+<li>Bloquean el acceso a las redes de empleados (VLAN 10 y 11)</li>
+<li>Bloquean el acceso entre clientes de diferentes sedes</li>
+<li>Permiten el resto del tráfico</li>
+</ul>
+<p><strong>ACL 102 - Para VLANs de empleados (VLAN 10 y 11):</strong></p>
+<ul>
+<li>Bloquean el acceso a las redes de clientes (VLAN 20 y 21)</li>
+<li>Permiten la comunicación entre empleados de diferentes sedes</li>
+<li>Permiten el resto del tráfico</li>
+</ul>
+<p><strong>¿Por qué estas reglas?</strong> La idea es que los clientes solo puedan navegar por internet o usar servicios específicos, pero nunca acceder a los recursos internos de la empresa. Los empleados también tienen restricciones para que no puedan acceder a las redes de clientes, evitando posibles problemas de seguridad.</p>
+<h2 is-upgraded>4. Router-on-a-stick</h2>
+<p>Esta técnica nos permite controlar todo el tráfico entre VLANs desde un solo punto (el router). Las ventajas de seguridad son:</p>
+<ul>
+<li><strong>Punto de control centralizado</strong>: Todo el tráfico entre VLANs pasa por el router, donde aplicamos las ACLs</li>
+<li><strong>Más fácil de gestionar</strong>: En lugar de tener que configurar seguridad en varios sitios, lo hacemos todo en el router</li>
+<li><strong>Visibilidad total</strong>: Podemos ver y controlar todo el tráfico que pasa entre las diferentes VLANs</li>
+</ul>
+<p>Básicamente, si las VLANs son como habitaciones separadas, el router es la única puerta que comunica esas habitaciones, y ahí es donde controlamos quién puede pasar y quién no.</p>
+<h2 is-upgraded>5. Enrutamiento estático</h2>
+<p>Hemos configurado las rutas entre los routers de forma manual (estática) en lugar de usar protocolos dinámicos:</p>
+<ul>
+<li><strong>Rutas específicas</strong>: Cada router solo conoce las rutas exactas que necesita</li>
+<li><strong>Sin protocolos dinámicos vulnerables</strong>: Evitamos usar protocolos como RIP u OSPF que podrían ser explotados por atacantes</li>
+<li><strong>Mayor control</strong>: Sabemos exactamente por dónde pasa cada paquete</li>
+</ul>
+<p>El Router0 tiene rutas hacia las redes de ambas sedes (10.10.0.0/23 y 10.10.2.0/23), mientras que Router1 y Router2 tienen rutas hacia la otra sede pasando siempre por Router0.</p>
+<h2 is-upgraded>6. Diseño de red WAN con subredes /30</h2>
+<p>Para conectar los routers entre sí hemos usado redes /30, que son las más pequeñas posibles (solo 2 IPs útiles):</p>
+<ul>
+<li><strong>Red 10.10.6.0/30</strong>: Conecta Router0 con Router1</li>
+<li><strong>Red 10.10.6.4/30</strong>: Conecta Router0 con Router2</li>
+</ul>
+<p>Esto no solo optimiza el uso de direcciones IP, sino que también reduce la superficie de ataque, porque solo hay dos dispositivos por enlace y nada más puede conectarse ahí.</p>
+<h2 is-upgraded>7. Separación física de sedes</h2>
+<p>Aunque sea obvio, el hecho de tener las sedes físicamente separadas y conectadas solo a través del Router0 también es una medida de seguridad:</p>
+<ul>
+<li>Si hay un problema en una sede (ataque, virus, etc.), está contenido en esa sede</li>
+<li>El Router0 actúa como punto de filtrado entre sedes</li>
+<li>Cada sede puede tener sus propias políticas de seguridad adicionales</li>
+</ul>
+<h2 is-upgraded>Resumen de la estrategia de seguridad</h2>
+<p>Nuestra estrategia sigue el principio de &#34;defensa en profundidad&#34;: múltiples capas de seguridad que se complementan entre sí. Si un atacante consigue conectarse a la red (lo cual ya es difícil por el port-security), aún así está limitado por su VLAN. Si intenta saltar a otra VLAN, las ACLs del router lo bloquean. Y si intenta atacar otra sede, tiene que pasar por el Router0 con todas sus reglas.</p>
+<p>Todo esto hace que la red sea mucho más segura que si solo tuviéramos una red plana donde todos pueden ver a todos.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Gemelo digital en Packet Tracer" duration="0">
+        <h2 is-upgraded>¿Qué hemos montado?</h2>
+<p>Todo el proyecto está en el archivo <code>Proyecto2.pkt</code>. Básicamente es una simulación completa de la red que funcionaría en la vida real, pero hecha en Packet Tracer para poder probarla sin necesidad de tener todo el hardware físico.</p>
+<h2 is-upgraded>Los equipos que hemos usado</h2>
+<p><strong>Routers:</strong></p>
+<ul>
+<li>3 routers ISR4331 (Router0, Router1 y Router2)</li>
+<li>Router0 hace de intermediario entre las dos sedes</li>
+<li>Router1 y Router2 gestionan las VLANs de cada sede con router-on-a-stick</li>
+</ul>
+<p><strong>Switches:</strong></p>
+<ul>
+<li>2 switches Cisco 2960-24TT</li>
+<li>Switch0 en la Sede A con las VLANs 10 y 20</li>
+<li>Switch1 en la Sede B con las VLANs 11 y 21</li>
+</ul>
+<p><strong>Ordenadores:</strong></p>
+<ul>
+<li>8 PCs en total (2 por cada VLAN)</li>
+<li>PC0 y PC1 son empleados de la Sede A</li>
+<li>PC2 y PC3 son clientes de la Sede A</li>
+<li>PC4 y PC5 son empleados de la Sede B</li>
+<li>PC6 y PC7 son clientes de la Sede B</li>
+</ul>
+<h2 is-upgraded>Lo que hemos configurado</h2>
+<p><strong>VLANs:</strong></p>
+<ul>
+<li>VLAN 10 (EMPLEADOS_A): Puertos Fa0/1-10 del Switch0</li>
+<li>VLAN 20 (CLIENTES_A): Puertos Fa0/11-20 del Switch0</li>
+<li>VLAN 11 (EMPLEADOS_B): Puertos Fa0/1-10 del Switch1</li>
+<li>VLAN 21 (CLIENTES_B): Puertos Fa0/11-20 del Switch1</li>
+</ul>
+<p><strong>Enlaces trunk:</strong></p>
+<ul>
+<li>Los puertos GigabitEthernet 0/1 de ambos switches están en modo trunk para llevar todas las VLANs hasta los routers</li>
+</ul>
+<p><strong>Subinterfaces en los routers:</strong></p>
+<ul>
+<li>Router1 tiene las subinterfaces 0/0/1.10 y 0/0/1.20 para las VLANs de la Sede A</li>
+<li>Router2 tiene las subinterfaces 0/0/1.11 y 0/0/1.21 para las VLANs de la Sede B</li>
+</ul>
+<p><strong>Rutas estáticas:</strong></p>
+<ul>
+<li>Router0 sabe cómo llegar a las redes de las dos sedes</li>
+<li>Router1 sabe cómo llegar a las redes de la Sede B pasando por Router0</li>
+<li>Router2 sabe cómo llegar a las redes de la Sede A pasando por Router0</li>
+</ul>
+<p><strong>ACLs de seguridad:</strong></p>
+<ul>
+<li>ACL 101 en cada router para bloquear a los clientes el acceso a las redes de empleados</li>
+<li>ACL 102 en cada router para bloquear a los empleados el acceso a las redes de clientes</li>
+</ul>
+<p><strong>Port-security:</strong></p>
+<ul>
+<li>Todos los puertos de acceso (Fa0/1-20) solo permiten 1 MAC por puerto</li>
+<li>Si intentas conectar otro dispositivo, el puerto se apaga automáticamente</li>
+</ul>
+<h2 is-upgraded>Pruebas que hemos hecho</h2>
+<p>Hemos probado la red haciendo pings entre diferentes PCs para comprobar que las ACLs funcionan bien:</p>
+<p><strong>Conexiones que SÍ funcionan:</strong></p>
+<ul>
+<li>✅ <strong>PC0 → PC1</strong>: Dos empleados de la misma sede se pueden comunicar sin problemas</li>
+<li>✅ <strong>PC0 → PC4</strong>: Los empleados de diferentes sedes pueden hablarse entre sí (pasa por Router0)</li>
+<li>✅ <strong>PC2 → PC3</strong>: Los clientes de la misma sede también pueden comunicarse</li>
+<li>✅ <strong>Cualquier PC → Router0</strong>: Todos los dispositivos pueden acceder al router intermediario</li>
+</ul>
+<p class="image-container"><img alt="alt text" src="img\\2ea5f505d70d02c7.png"></p>
+<p><strong>Conexiones que NO funcionan (bloqueadas por las ACLs):</strong></p>
+<ul>
+<li>❌ <strong>PC2 → PC0</strong>: Un cliente no puede hacer ping a un empleado de su misma sede</li>
+<li>❌ <strong>PC2 → PC4</strong>: Un cliente de la Sede A no puede acceder a empleados de la Sede B</li>
+<li>❌ <strong>PC6 → PC4</strong>: Un cliente de la Sede B no puede acceder a empleados de la Sede B</li>
+<li>❌ <strong>PC0 → PC2</strong>: Un empleado no puede acceder a la red de clientes (también bloqueado)</li>
+<li>❌ <strong>PC2 → PC6</strong>: Los clientes de diferentes sedes no pueden comunicarse entre sí</li>
+</ul>
+<p>Estas pruebas confirman que las ACLs están funcionando correctamente y que tenemos la seguridad que queríamos.</p>
+<p class="image-container"><img alt="alt text" src="img\\83e31b9b93a89a4e.png"></p>
+<h2 is-upgraded>¿Por qué es útil tener esto en Packet Tracer?</h2>
+<p>La verdad es que hacer esto en Packet Tracer antes de montarlo con equipos reales tiene muchas ventajas:</p>
+<ol type="1">
+<li><strong>Podemos probar sin romper nada</strong>: Si nos equivocamos en alguna configuración, simplemente lo reseteamos y ya está, sin haber tocado ningún equipo físico</li>
+<li><strong>Es más barato</strong>: No necesitamos comprar 3 routers, 2 switches y 8 ordenadores para hacer pruebas</li>
+<li><strong>Aprendemos mejor</strong>: Podemos experimentar, ver qué pasa si cambiamos cosas, y entender cómo funciona todo sin presión</li>
+<li><strong>Documentación visual</strong>: Es más fácil explicarle a alguien cómo funciona la red si puede ver el esquema en Packet Tracer</li>
+<li><strong>Detectar errores antes</strong>: Si algo no funciona en la simulación, sabemos que tampoco funcionará en la realidad, así que lo arreglamos aquí primero</li>
+</ol>
+<p>Básicamente, este gemelo digital nos sirve como banco de pruebas para validar que todo está bien antes de implementarlo de verdad.</p>
+
+
+      </google-codelab-step>
+    
+      <google-codelab-step label="Conclusiones" duration="0">
+        <h2 is-upgraded>Lo que hemos conseguido</h2>
+<p>Después de todo el trabajo, hemos conseguido montar una red que cumple con todos los objetivos de seguridad que nos planteamos al principio. La red está dividida en 4 VLANs diferentes (dos para empleados y dos para clientes, una de cada en cada sede), y gracias a las ACLs los clientes no pueden acceder a las redes de empleados ni tampoco pueden comunicarse entre sedes.</p>
+<p><strong>Los puntos clave que hemos logrado:</strong></p>
+<ol type="1">
+<li><strong>Separación efectiva de empleados y clientes</strong>: Hemos conseguido que los visitantes estén completamente aislados de los recursos internos de la empresa. Un cliente puede conectarse a la red para usar internet, pero no puede ver ni acceder a ningún ordenador o servidor de empleados.</li>
+<li><strong>Comunicación entre sedes</strong>: Los empleados de ambas sedes pueden trabajar juntos sin problemas, compartir archivos y comunicarse, todo pasando por el Router0 que hace de intermediario.</li>
+<li><strong>Seguridad en varias capas</strong>: No nos hemos conformado con solo poner VLANs. Tenemos VLANs + ACLs + port-security, así que hay múltiples barreras que un atacante tendría que superar.</li>
+<li><strong>Red escalable</strong>: Si la empresa crece, podemos añadir más PCs fácilmente porque hemos dejado espacio de sobra en las redes (510 hosts para empleados y 254 para clientes en cada sede).</li>
+<li><strong>Todo documentado y probado</strong>: Tenemos el proyecto en Packet Tracer con todas las configuraciones documentadas, así que si alguien necesita replicarlo o hacer cambios, sabe exactamente qué hacer.</li>
+</ol>
+<h2 is-upgraded>Lo bueno del diseño</h2>
+<p><strong>Por qué nos gusta esta configuración:</strong></p>
+<ul>
+<li><strong>Cada cosa en su sitio</strong>: Las VLANs mantienen todo organizado. Sabes que del puerto 1 al 10 son empleados y del 11 al 20 son clientes. Simple y claro.</li>
+<li><strong>Fácil de mantener</strong>: Si hay un problema en la Sede A, solo tenemos que revisar el Switch0 y el Router1. No hay que tocar nada de la Sede B. Cada cosa está separada.</li>
+<li><strong>Router-on-a-stick funciona genial</strong>: Solo necesitamos un cable entre el switch y el router para gestionar todas las VLANs. No hace falta tener un cable por cada VLAN.</li>
+<li><strong>Port-security nos protege</strong>: Si alguien intenta conectar un dispositivo raro o hacer algo sospechoso, el puerto se apaga solo. Es como tener un guardia de seguridad en cada puerto.</li>
+<li><strong>Control total del tráfico</strong>: Como todo pasa por los routers, podemos ver exactamente qué está pasando y aplicar las reglas de seguridad que necesitemos.</li>
+</ul>
+<h2 is-upgraded>Cosas que se podrían mejorar</h2>
+<p>Aunque la red funciona bien, hay algunas cosas que reconocemos que podrían ser mejores:</p>
+<p><strong>Limitaciones que tiene ahora:</strong></p>
+<ul>
+<li><strong>Sin redundancia</strong>: Si se cae Router0, las dos sedes se quedan desconectadas entre sí. Deberíamos tener un enlace de respaldo.</li>
+<li><strong>IPs estáticas</strong>: Hemos configurado todas las IPs a mano. Si tuviéramos que conectar 50 PCs nuevos, sería un rollo tener que configurar cada uno. Un servidor DHCP nos vendría bien.</li>
+<li><strong>Enrutamiento estático</strong>: Si cambia algo en la red, tenemos que reconfigurar las rutas manualmente en todos los routers. Con protocolos dinámicos como OSPF esto sería automático.</li>
+<li><strong>Un solo router por sede</strong>: Si se estropea Router1, toda la Sede A se queda sin acceso a la otra sede. Tener dos routers sería más seguro.</li>
+</ul>
+<p><strong>Cosas que añadiríamos si tuviéramos más tiempo:</strong></p>
+<ol type="1">
+<li><strong>Servidor DHCP</strong>: Para que los PCs obtengan la IP automáticamente. Así es mucho más cómodo cuando conectas equipos nuevos.</li>
+<li><strong>Más routers y enlaces de backup</strong>: Para que si falla uno, la red siga funcionando. Esto se llama redundancia y es súper importante en redes profesionales.</li>
+<li><strong>Monitorización</strong>: Algún sistema que nos avise si hay problemas en la red, como tráfico raro o puertos que se caen.</li>
+<li><strong>Autenticación de usuarios</strong>: Algo como 802.1X para que antes de conectarse a la red tengas que poner usuario y contraseña. Ahora mismo solo comprobamos la MAC del dispositivo.</li>
+<li><strong>Priorización de tráfico (QoS)</strong>: Para que si hay llamadas por internet o videoconferencias, ese tráfico vaya antes que el resto.</li>
+</ol>
+<h2 is-upgraded>Para qué serviría esto en la vida real</h2>
+<p>Este diseño que hemos hecho sería perfecto para:</p>
+<ul>
+<li><strong>Empresas pequeñas o medianas con varias oficinas</strong>: Que necesitan conectar dos o tres sedes y mantener seguridad entre empleados y visitantes.</li>
+<li><strong>Hoteles o centros comerciales</strong>: Donde hay WiFi para clientes pero los empleados necesitan su propia red privada para trabajar.</li>
+<li><strong>Colegios o institutos</strong>: Donde los alumnos tienen acceso limitado a internet pero los profesores necesitan acceder a sistemas internos.</li>
+<li><strong>Oficinas con zonas de coworking</strong>: Donde trabaja gente de fuera que necesita internet pero no puede acceder a los servidores de la empresa.</li>
+</ul>
+<p>Básicamente, cualquier sitio donde haya que separar claramente quién puede acceder a qué recursos.</p>
+<h2 is-upgraded>Reflexión final</h2>
+<p>Lo que más hemos aprendido con este proyecto es que la seguridad no es solo poner una contraseña WiFi. Hay que pensar en capas: VLANs para separar, ACLs para filtrar, port-security para controlar los dispositivos... Y todo tiene que estar bien configurado y probado.</p>
+<p>También hemos visto lo útil que es Packet Tracer para hacer pruebas. Poder simular toda la red, hacer pings, probar que las ACLs bloquean lo que deben bloquear, y ver cómo funciona todo sin necesidad de tener el hardware físico es muy práctico.</p>
+<p>En resumen, hemos montado una red segura, funcional y escalable que separa correctamente los diferentes tipos de usuarios. Las ACLs funcionan, el port-security protege, las VLANs organizan, y todo está documentado para que se pueda replicar o modificar fácilmente. Estamos contentos con el resultado y creemos que cumple con los objetivos de seguridad que nos planteamos al inicio del proyecto.</p>
+
+
+      </google-codelab-step>
+    
+  </google-codelab>
+
+  <script src="https://storage.googleapis.com/claat-public/native-shim.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/custom-elements.min.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/prettify.js"></script>
+  <script src="https://storage.googleapis.com/claat-public/codelab-elements.js"></script>
+  <script src="//support.google.com/inapp/api.js"></script>
+
+</body>
+</html>
