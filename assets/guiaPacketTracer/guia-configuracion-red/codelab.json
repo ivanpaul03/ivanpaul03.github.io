@@ -1,0 +1,23 @@
+{
+  "environment": "web",
+  "format": "html",
+  "prefix": "https://storage.googleapis.com",
+  "mainga": "UA-49880327-14",
+  "updated": "2025-11-29T23:43:33+01:00",
+  "id": "guia-configuracion-red",
+  "duration": 0,
+  "title": "Guía de Configuración de Red",
+  "authors": "Sergio González Noria, Iván Paúl Alba, Manuel Pérez Romero, Javier Calvillo Acebedo",
+  "summary": "Guía de Configuración de Red",
+  "source": ".\\codelab.md",
+  "theme": "",
+  "status": [
+    "published"
+  ],
+  "category": [
+    "guia"
+  ],
+  "tags": [],
+  "feedback": "https://github.com/IES-Rafael-Alberti/25-26-Ciberseguridad-Grupo-5",
+  "url": "guia-configuracion-red"
+}
